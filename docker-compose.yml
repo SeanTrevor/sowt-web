@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+
+  reverse-proxy:
+    image: nginx:latest
+    container_name: reverse-proxy
+    build:
+      context: ./reverse_proxy
+    depends_on:
+      - sowt-web
+    volumes:
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+
+  sowt-web:
+    image: website
+    container_name: sowt-web
+    build:
+      context: ./sowt_web
+    ports:
+      - 8080:80
+
+  sowt-app:
+    image: react-app
+    container_name: sowt-app
+    depends_on:
+      - sowt-web
+    build:
+      context: ./sowt_app
+    ports:
+      - 8081:80
